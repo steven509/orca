@@ -28,6 +28,7 @@ import {
   CLAUDE_PROFILE_SETUP_FAILED_MESSAGE
 } from '../../shared/claude-profile-routing'
 import { getPosixClaudeShellFunction } from '../../shared/claude-shell-function'
+import { SYSTEM_DEFAULT_AGENT_ACCOUNT_ID } from '../../shared/project-agent-accounts'
 import { ClaudeProfileRouter, type ClaudeProfileRouterSettings } from './claude-profile-router'
 import {
   claudeProfileHistoryDirs,
@@ -525,6 +526,35 @@ describe('ClaudeProfileRouter', () => {
       expect(claude(injected, "export CLAUDE_CONFIG_DIR='/somewhere/else'\n")).toBe(
         '/somewhere/else'
       )
+    }
+  )
+
+  it.skipIf(process.platform === 'win32')(
+    "keeps a project's pinned terminals on their account while the selection moves",
+    async () => {
+      const f = fixture()
+      mkdirSync(f.home('a'), { recursive: true })
+      mkdirSync(f.home('b'), { recursive: true })
+      const claude = claudeShellProbe(f.root)
+      f.router.publish()
+      const pinned = { ...f.router.terminalEnv(undefined, 'b') }
+      // Removal waits for the pinned account's background setup.
+      await vi.waitFor(() => expect(f.setup.calls).toBe(2))
+      f.setup.settle()
+      const systemDefault = {
+        ...f.router.terminalEnv(undefined, SYSTEM_DEFAULT_AGENT_ACCOUNT_ID)
+      }
+      expect(claude(pinned)).toBe(f.home('b'))
+      expect(claude(systemDefault)).toBe('unset')
+      expect(claude({ ...f.router.terminalEnv() })).toBe(f.home('a'))
+
+      f.settings.activeClaudeManagedAccountId = null
+      f.router.publish()
+      expect(claude(pinned)).toBe(f.home('b'))
+      expect(claude({ ...f.router.terminalEnv() })).toBe('unset')
+
+      await f.router.removeAccount('b')
+      expect(claude(pinned)).toBe('unset')
     }
   )
 

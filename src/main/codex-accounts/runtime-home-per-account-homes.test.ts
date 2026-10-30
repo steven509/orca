@@ -145,6 +145,43 @@ describe('CodexRuntimeHomeService', () => {
     }
   )
 
+  it('launches a project-pinned account in its own home without moving the selection', async () => {
+    const account = (id: string) => ({
+      id,
+      email: `${id}@example.com`,
+      managedHomePath: createManagedAuth(testState.userDataDir, id, `{"account":"${id}"}\n`),
+      providerAccountId: null,
+      workspaceLabel: null,
+      workspaceAccountId: null,
+      createdAt: 1,
+      updatedAt: 1,
+      lastAuthenticatedAt: 1
+    })
+    const selected = account('account-1')
+    const pinned = account('account-2')
+    const store = createStore(
+      createSettings({
+        realHomeRoutable: true,
+        codexManagedAccounts: [selected, pinned],
+        activeCodexManagedAccountId: 'account-1',
+        activeCodexManagedAccountIdsByRuntime: { host: 'account-1', wsl: {} }
+      })
+    )
+    const { CodexRuntimeHomeService } = await import('./runtime-home-service')
+    const service = new CodexRuntimeHomeService(store as never)
+
+    expect(
+      service.prepareForCodexLaunch(undefined, undefined, { pinnedAccountId: 'account-2' })
+    ).toBe(pinned.managedHomePath)
+    expect(
+      service.prepareForCodexLaunch(undefined, undefined, { pinnedAccountId: 'system-default' })
+    ).toBeNull()
+    expect(
+      service.prepareForCodexLaunch(undefined, undefined, { pinnedAccountId: 'removed' })
+    ).toBe(selected.managedHomePath)
+    expect(service.prepareForCodexLaunch()).toBe(selected.managedHomePath)
+  })
+
   it('materializes resources and config into the per-account home on launch', async () => {
     writeFileSync(getSystemCodexAuthPath(), '{"account":"system"}\n', 'utf-8')
     mkdirSync(join(getSystemCodexHomePath(), 'skills', 'review'), { recursive: true })

@@ -148,6 +148,7 @@ import {
   retireGeneratedWorktreeName
 } from '../worktree-name-retirement'
 import { createRetiredNameLookup } from '../../shared/worktree/retired-name-registry'
+import { normalizeWorkspaceAgentAccounts } from '../../shared/project-agent-accounts'
 import { findPendingWorktreeRemovalConflict } from '../worktree-removal-table'
 import {
   openWorktreeCreatePathClaim,
@@ -1548,6 +1549,7 @@ async function performLocalWorktreeCreate(
   const now = Date.now()
   // Review head SHA/ref seeds creation; Source Control comparison uses the review target branch.
   const metadataBaseRef = args.compareBaseRef ?? remoteTrackingBase?.ref ?? baseBranch
+  const agentAccounts = normalizeWorkspaceAgentAccounts(args.agentAccounts)
   const metaUpdates: Partial<WorktreeMeta> = {
     // Path IDs can be reused after external deletion; rotate instance identity to reject stale lineage.
     instanceId: randomUUID(),
@@ -1586,6 +1588,7 @@ async function performLocalWorktreeCreate(
     ...(args.pendingFirstAgentMessageRename === true && isTuiAgent(args.createdWithAgent)
       ? { pendingFirstAgentMessageRename: true }
       : {}),
+    ...(agentAccounts ? { agentAccounts } : {}),
     ...(args.linkedIssue !== undefined ? { linkedIssue: args.linkedIssue } : {}),
     ...(args.linkedPR !== undefined ? { linkedPR: args.linkedPR } : {}),
     ...(args.linkedLinearIssue !== undefined ? { linkedLinearIssue: args.linkedLinearIssue } : {}),

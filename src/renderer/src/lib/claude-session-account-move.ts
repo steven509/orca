@@ -1,6 +1,7 @@
 /** Find sessions affected by account selection; resume preserves the session while launch reads the newly selected account folder. */
 import type { AppState } from '@/store'
 import { useAppStore } from '@/store'
+import { isWorktreeAgentAccountPinned } from './worktree-agent-account-pin'
 import {
   confirmRuntimeTerminalForegroundProcess,
   inspectRuntimeTerminalProcess,
@@ -115,6 +116,13 @@ function* localClaudePanes(
           continue
         }
         const { laneKey } = resolveCodexPaneSelectionLane({ state, tab, ptyId })
+        // A global switch leaves project-pinned panes on their account, so they never move.
+        if (
+          laneKey === getCodexSelectionLaneKey({ runtime: 'host' }) &&
+          isWorktreeAgentAccountPinned(state, worktreeId, 'claude')
+        ) {
+          continue
+        }
         yield {
           ptyId,
           worktreeId,

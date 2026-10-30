@@ -15,6 +15,7 @@ import type { OrcaWorkspaceLayout } from '../global-settings-types'
 import type { DiffComment, MobileDiffReviewState } from '../diff-comment-types'
 import type { SmartTier } from '../sidebar-list/sort-stamps'
 import type { ExternalConversationLink } from '../external-conversation-link'
+import type { WorkspaceAgentAccounts } from '../project-agent-accounts'
 
 export type WorktreeMeta = {
   /** Immutable per-workspace-instance ID used to reject stale lineage after path reuse. */
@@ -70,6 +71,8 @@ export type WorktreeMeta = {
   createdAt?: number
   /** See {@link Worktree.createdWithAgent}. Persisted to orca-data.json. */
   createdWithAgent?: TuiAgent
+  /** Agent accounts picked at creation; outrank the project default for this workspace's launches. */
+  agentAccounts?: WorkspaceAgentAccounts
   /** See {@link Worktree.pendingFirstAgentMessageRename}. */
   pendingFirstAgentMessageRename?: boolean
   /** See {@link Worktree.firstAgentMessageRenameError}. */

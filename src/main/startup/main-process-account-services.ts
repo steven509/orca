@@ -16,6 +16,7 @@ import { resolveHostCodexSessionSourceHome } from '../codex/codex-session-source
 import { browserManager } from '../browser/browser-manager'
 import { prewarmStructuredAgentModelCatalogs } from '../runtime/structured-agent-model-catalog-wiring'
 import { mainProcessState as state } from './main-process-state'
+import { installProjectAgentAccountStore } from '../project-agent-account-pins'
 
 // Settings that change which account or binary a new chat's agent runs under.
 const MODEL_CATALOG_ACCOUNT_SETTINGS = [
@@ -61,6 +62,7 @@ export function initializeMainProcessAccountServices(): void {
   state.codexAccounts = services.codexAccounts
   state.claudeRuntimeAuth = services.claudeRuntimeAuth
   state.claudeAccounts = services.claudeAccounts
+  installProjectAgentAccountStore(store)
   void startCodexStateDbBackfillRecoveryInBackground(getOrcaManagedCodexHomePath())
   // Defer shared-home migration; compatibility launches re-arm non-destructive scans for new rollouts (#4444, #8612, #12480).
   state.codexSessionMigration.scheduleInitialRun()

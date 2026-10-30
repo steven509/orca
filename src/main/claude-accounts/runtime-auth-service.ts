@@ -47,10 +47,11 @@ export class ClaudeRuntimeAuthService {
   }
 
   prepareForClaudeLaunch(
-    target?: ClaudeAccountSelectionTarget
+    target?: ClaudeAccountSelectionTarget,
+    pinnedAccountId?: string
   ): Promise<ClaudeRuntimeAuthPreparation> {
     const wsl = this.wslRouteFor(target)
-    return wsl ? wsl.router.prepareLaunch(wsl.distro) : this.router.prepareLaunch()
+    return wsl ? wsl.router.prepareLaunch(wsl.distro) : this.router.prepareLaunch(pinnedAccountId)
   }
 
   async prepareForRateLimitFetch(

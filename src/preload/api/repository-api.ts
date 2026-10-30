@@ -54,6 +54,7 @@ export type RepositoryApi = {
         | 'kind'
         | 'issueSourcePreference'
         | 'defaultJiraProject'
+        | 'agentAccounts'
         | 'externalWorktreeVisibilityPromptDismissedAt'
         | 'externalWorktreeInboxBaselinePaths'
         | 'importedExternalWorktreePaths'

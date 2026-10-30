@@ -3,6 +3,7 @@ import type { WorktreeCatalogVersion } from './catalog-version'
 import type { AutomationExecutionTargetType } from '../automations-types'
 import type { TaskSourceContext } from '../task-source-context'
 import type { TuiAgent } from '../tui-agent'
+import type { WorkspaceAgentAccounts } from '../project-agent-accounts'
 import type { DiffComment, MobileDiffReviewState } from '../diff-comment-types'
 import type { EphemeralVmCheckoutMode } from '../orca-yaml-hook-types'
 import type { BuiltInWorktreeVisibilitySourceId } from '../repo-types'
@@ -145,6 +146,8 @@ export type Worktree = {
   createdAt?: number
   /** Seed a replacement terminal with the original agent after every visible surface has closed. */
   createdWithAgent?: TuiAgent
+  /** Agent accounts picked at creation; outrank the project default for this workspace's launches. */
+  agentAccounts?: WorkspaceAgentAccounts
   /** Awaiting a first-agent-message branch/title rename. */
   pendingFirstAgentMessageRename?: boolean
   /** Last auto-rename generation failure for the badge; null/undefined covers unattempted, successful and benign skips. */

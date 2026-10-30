@@ -33,6 +33,7 @@ import { getWorkspaceComposerInitialFocusTarget } from '@/lib/workspace-composer
 import { getFolderWorkspacePrimaryActionLabel } from '@/components/sidebar/folder-workspace-composer-helpers'
 import type { WorkspaceCreationTargetHint } from '@/lib/project-host-workspace-target'
 import { useAgentMenuObservation } from '@/components/tab-bar/use-new-tab-agent-menu-rows'
+import { useComposerAgentAccountField } from '@/components/new-workspace/use-composer-agent-account-field'
 import { addAppKeyListener, removeAppKeyListener } from '@/lib/app-keyboard-router'
 
 // Keep Add Project’s clone/SSH machinery outside the composer entry render, matching App loading.
@@ -208,6 +209,20 @@ function QuickTabBody({
   )
   const launchSelection = observation.selectionFor(quickAgent, quickAgentSurface)
   const createDisabled = formDisabled || !launchSelection.ready
+  const selectedProjectOption = cardProps.projectOptions.find(
+    (option) => option.id === cardProps.selectedProjectId
+  )
+  const isFolderWorkspaceTarget = selectedProjectOption?.kind === 'project-group'
+  // Native chat resolves its account outside terminal routing, so only terminal launches offer a pick.
+  const agentAccount = useComposerAgentAccountField({
+    agent: quickAgent,
+    repoId: launchWorkspace.repoId,
+    executionHostId: launchWorkspace.executionHostId,
+    enabled:
+      !isFolderWorkspaceTarget &&
+      Boolean(cardProps.agentRows) &&
+      launchSelection.choice?.route !== 'structured-native-chat'
+  })
 
   const handleQuickAgentChange = useCallback(
     (agent: TuiAgent | null, surface?: AgentLaunchSurface) => {
@@ -229,9 +244,17 @@ function QuickTabBody({
     }
     await submitQuick(quickAgent, {
       setupOnly: quickSetupOnly,
-      launchChoice: launchSelection.choice
+      launchChoice: launchSelection.choice,
+      agentAccounts: agentAccount.agentAccounts
     })
-  }, [createDisabled, quickAgent, launchSelection.choice, quickSetupOnly, submitQuick])
+  }, [
+    createDisabled,
+    quickAgent,
+    launchSelection.choice,
+    quickSetupOnly,
+    submitQuick,
+    agentAccount.agentAccounts
+  ])
   // Layer Add Project without replacing the composer. Retain it for close animation and clone/scan cancellation; folder/non-Git navigation still tears down the modal.
   const [addProjectOpen, setAddProjectOpen] = useState(false)
   const [addProjectMounted, setAddProjectMounted] = useState(false)
@@ -264,10 +287,6 @@ function QuickTabBody({
     }),
     [addProjectOpen, handleAddProjectCloseAutoFocus, handleProjectAdded, selectAddedProjectGroup]
   )
-  const selectedProjectOption = cardProps.projectOptions.find(
-    (option) => option.id === cardProps.selectedProjectId
-  )
-  const isFolderWorkspaceTarget = selectedProjectOption?.kind === 'project-group'
   const primaryActionLabel = isFolderWorkspaceTarget
     ? getFolderWorkspacePrimaryActionLabel()
     : cardProps.selectedRepoIsGit
@@ -334,6 +353,7 @@ function QuickTabBody({
         quickSetupOnly={quickSetupOnly}
         onQuickSetupOnlySelect={handleQuickSetupOnlySelect}
         {...cardProps}
+        agentAccountField={agentAccount.field}
         // Chips list offered agents, keeping a pick whose chat is still being learned.
         detectedAgentIds={chipAgentIds}
         createDisabled={createDisabled}

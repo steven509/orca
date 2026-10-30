@@ -219,6 +219,36 @@ export function getRepositoryPaneSearchEntries(
           }
         ]),
     ...(isFolder ? [] : getRepositoryGitWorktreeSearchEntries(repo)),
+    ...(getRepoExecutionHostId(repo) === LOCAL_EXECUTION_HOST_ID
+      ? [
+          {
+            title: translate('components.RepositoryAgentAccountsSection.title', 'Agent Accounts'),
+            description: translate(
+              'components.RepositoryAgentAccountsSection.searchDescription',
+              "Choose which Claude and Codex accounts this project's agent terminals use."
+            ),
+            keywords: [
+              repo.displayName,
+              ...translateSearchKeyword(
+                'components.RepositoryAgentAccountsSection.keywordAccount',
+                'account'
+              ),
+              ...translateSearchKeyword(
+                'components.RepositoryAgentAccountsSection.keywordClaude',
+                'claude'
+              ),
+              ...translateSearchKeyword(
+                'components.RepositoryAgentAccountsSection.keywordCodex',
+                'codex'
+              ),
+              ...translateSearchKeyword(
+                'components.RepositoryAgentAccountsSection.keywordLogin',
+                'login'
+              )
+            ]
+          }
+        ]
+      : []),
     {
       title: translate('auto.components.settings.repository.search.c5266c2c9d', 'Remove Project'),
       description: translate(

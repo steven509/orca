@@ -11,6 +11,7 @@ import type {
   ClientAutomationWorkspaceProvenance,
   WorkspaceLinkedItem
 } from '../../../../../../shared/worktree/types'
+import type { WorkspaceAgentAccounts } from '../../../../../../shared/project-agent-accounts'
 
 /** Trailing bag for `createWorktree` args that outgrew its positional list. */
 export type CreateWorktreeCallOptions = {
@@ -32,6 +33,8 @@ export type CreateWorktreeCallOptions = {
   displayNameKind?: CreateWorktreeArgs['displayNameKind']
   /** Parent picked in the composer. Sets sidebar nesting only; ignored if it no longer exists. */
   parentWorktreeId?: string
+  /** Local hosts only: remote runtimes route launches through their own account rosters. */
+  agentAccounts?: WorkspaceAgentAccounts
   provisionedRoot?: {
     runtimeId: string
     executionHostId: ExecutionHostId
@@ -129,6 +132,7 @@ export function buildLocalWorktreeCreateArgs(
   return {
     repoId: request.repoId,
     ...sharedCreateFields(request, attempt),
+    ...(request.options?.agentAccounts ? { agentAccounts: request.options.agentAccounts } : {}),
     ...(request.startup ? { startup: request.startup } : {}),
     ...(request.creationId ? { creationId: request.creationId } : {}),
     // Why local only: this desktop's main minted the dispatch token, so a runtime host must reject it.

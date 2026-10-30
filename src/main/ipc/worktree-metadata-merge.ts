@@ -81,6 +81,7 @@ export function mergeWorktree(
     ...(meta?.lastTerminalUseAt !== undefined ? { lastTerminalUseAt: meta.lastTerminalUseAt } : {}),
     ...(meta?.createdAt !== undefined ? { createdAt: meta.createdAt } : {}),
     ...(meta?.createdWithAgent !== undefined ? { createdWithAgent: meta.createdWithAgent } : {}),
+    ...(meta?.agentAccounts !== undefined ? { agentAccounts: meta.agentAccounts } : {}),
     ...(meta?.automationProvenance !== undefined
       ? { automationProvenance: meta.automationProvenance }
       : {}),

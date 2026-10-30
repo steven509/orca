@@ -218,6 +218,7 @@ export function useQuickCreationExecution(input: QuickCreationExecutionInput) {
         linkedPR: submitLinkedPR,
         pushTarget: submitPushTarget,
         agent,
+        agentAccounts: options?.agentAccounts,
         agentLaunchRoute,
         linkedLinearIssue,
         linkedLinearIssueWorkspaceId,

@@ -102,6 +102,7 @@ export class RepoUpdatePersistenceOperations {
         | 'symlinkPaths'
         | 'issueSourcePreference'
         | 'defaultJiraProject'
+        | 'agentAccounts'
         | 'forkSyncMode'
         | 'externalWorktreeVisibilityPromptDismissedAt'
         | 'externalWorktreeInboxBaselinePaths'

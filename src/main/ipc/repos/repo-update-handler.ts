@@ -45,6 +45,7 @@ export function registerRepoUpdateHandler(mainWindow: BrowserWindow, store: Stor
             | 'kind'
             | 'symlinkPaths'
             | 'issueSourcePreference'
+            | 'agentAccounts'
             | 'forkSyncMode'
             | 'externalWorktreeVisibilityPromptDismissedAt'
             | 'externalWorktreeInboxBaselinePaths'

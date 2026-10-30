@@ -12,6 +12,7 @@ import type {
 } from '../../../providers/pty-provider-contract'
 import type { CodexPaneHomeRoute } from '../../../codex/codex-pane-account-registry'
 import type { CodexAccountSelectionTarget } from '../../../codex-accounts/runtime-selection'
+import type { AgentAccountPins } from '../../../project-agent-account-pins'
 import type { ClaudeRuntimeAuthPreparation } from '../../../claude-accounts/runtime-auth-service'
 import type { StablePaneOwner } from '../pane/stable-owner'
 import type { PaneSpawnReservation } from '../pane/spawn-reservation'
@@ -62,6 +63,7 @@ export type RuntimePtySpawnState = {
   /** The host's verdict on the spawn's resume; a refused one starts the pane's plain shell. */
   resumeAdmission: ResumeSpawnAdmission | null
   codexSelectionTarget: CodexAccountSelectionTarget
+  agentAccountPins: AgentAccountPins
   launchCommand: string | undefined
   claudeAuth: ClaudeRuntimeAuthPreparation | null
   shouldPersistHostSessionBinding: boolean
@@ -210,6 +212,7 @@ export function createRuntimePtySpawnState(
     wslHoldReadAnchor: undefined,
     resumeAdmission: null,
     codexSelectionTarget: { runtime: 'host' },
+    agentAccountPins: {},
     launchCommand: undefined,
     claudeAuth: null,
     shouldPersistHostSessionBinding: false,

@@ -76,6 +76,8 @@ type PtySpawnHostEnvArgs = {
   shellOverride: string | undefined
   expectedWslDistro: string | null
   codexSelectionTarget: CodexAccountSelectionTarget
+  /** The project's Codex account; absent follows the global selection. */
+  codexAccountPin?: string
   /** An adopted stable pane launches nothing, so it gets no launch prep. */
   preAdopted: boolean
   isDaemonHostSpawn: boolean
@@ -137,8 +139,10 @@ async function resolvePtySpawnHostEnvForAct(args: PtySpawnHostEnvArgs): Promise<
   const launchCommand = codexResumeLaunch.command
   const baseEnv = deps.stripSequencedStartupResumeArgv(args.env, codexResumeLaunch)
   const launchesCodex = args.launchAgent === 'codex'
+  const pinnedAccountId = args.codexAccountPin
   const selectLaunchCodexHome = async (): Promise<string | null> =>
-    (await deps.getSelectedCodexHomePath?.(target, baseEnv, { launchesCodex })) ?? null
+    (await deps.getSelectedCodexHomePath?.(target, baseEnv, { launchesCodex, pinnedAccountId })) ??
+    null
   let selectedCodexHomePath = !args.preAdopted
     ? getCompatibleSelectedCodexHomePath(
         target,
@@ -158,14 +162,18 @@ async function resolvePtySpawnHostEnvForAct(args: PtySpawnHostEnvArgs): Promise<
       resolveCurrent: async () =>
         getCompatibleSelectedCodexHomePath(
           target,
-          (await deps.getSelectedCodexHomePath?.(target, baseEnv, { launchesCodex })) ?? null
+          (await deps.getSelectedCodexHomePath?.(target, baseEnv, {
+            launchesCodex,
+            pinnedAccountId
+          })) ?? null
         ),
       resolveAfterUnavailable: async (unavailableManagedHomePath) =>
         getCompatibleSelectedCodexHomePath(
           target,
           (await deps.getSelectedCodexHomePath?.(target, baseEnv, {
             unavailableManagedHomePath,
-            launchesCodex
+            launchesCodex,
+            pinnedAccountId
           })) ?? null
         )
     })

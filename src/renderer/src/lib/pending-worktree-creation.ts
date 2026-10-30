@@ -2,6 +2,7 @@ import type { ExecutionHostId } from '../../../shared/execution-host'
 import { worktreeIdsEqual } from '../../../shared/worktree/id'
 import type { FolderWorkspaceLinkedTask } from '../../../shared/folder-workspace-types'
 import type { TuiAgent } from '../../../shared/tui-agent'
+import type { WorkspaceAgentAccounts } from '../../../shared/project-agent-accounts'
 import type { WorkspaceSource as WorkspaceCreateTelemetrySource } from '../../../shared/workspace-source'
 import type {
   CreateSparseCheckoutRequest,
@@ -80,6 +81,8 @@ export type WorktreeCreationRequest = {
   linkedPR?: number
   pushTarget?: GitPushTarget
   agent: TuiAgent | null
+  /** Accounts picked in the composer; local hosts pin them on the new workspace. */
+  agentAccounts?: WorkspaceAgentAccounts
   /** Renderer-owned route decision captured at submit time and reused on retry. */
   agentLaunchRoute?: AgentLaunchRoute
   linkedLinearIssue?: string

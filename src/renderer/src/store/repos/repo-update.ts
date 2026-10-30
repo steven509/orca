@@ -5,6 +5,7 @@ import { sanitizeRepoIcon } from '../../../../shared/repo-icon'
 import { normalizeRepoBadgeColor } from '../../../../shared/repo-badge-color'
 import { normalizeGhAccountBinding } from '../../../../shared/github/account-binding'
 import { normalizeJiraProjectReference } from '../../../../shared/jira/jira-project-reference'
+import { normalizeProjectAgentAccounts } from '../../../../shared/project-agent-accounts'
 import {
   findRepoForHost,
   getRepoHostIdentityForParts,
@@ -29,6 +30,14 @@ export function sanitizeRepoUpdate(updates: RepoUpdate): RepoUpdate {
       delete sanitized.defaultJiraProject
     } else {
       sanitized.defaultJiraProject = reference
+    }
+  }
+  if ('agentAccounts' in sanitized) {
+    const agentAccounts = normalizeProjectAgentAccounts(sanitized.agentAccounts)
+    if (agentAccounts === undefined) {
+      delete sanitized.agentAccounts
+    } else {
+      sanitized.agentAccounts = agentAccounts
     }
   }
   if ('badgeColor' in sanitized) {

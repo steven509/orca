@@ -40,6 +40,7 @@ type RepositoryUpdates = Partial<
     | 'symlinkPaths'
     | 'issueSourcePreference'
     | 'defaultJiraProject'
+    | 'agentAccounts'
     | 'externalWorktreeVisibility'
     | 'externalWorktreeVisibilityPromptDismissedAt'
     | 'externalWorktreeInboxBaselinePaths'

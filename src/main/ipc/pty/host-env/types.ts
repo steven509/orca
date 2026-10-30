@@ -39,6 +39,8 @@ export type BuildPtyHostEnvOptions = {
 export type CodexHomeLaunchContext = {
   unavailableManagedHomePath?: string
   launchesCodex?: boolean
+  /** The project's host account, or System default; absent follows the selection. */
+  pinnedAccountId?: string
 }
 
 // Codex hook-trust preparation may await app-server I/O without blocking main (#16441).
@@ -72,5 +74,6 @@ export function allocatePtyLifecycleSequence(): number {
 }
 
 export type PrepareClaudeAuth = (
-  target?: ClaudeAccountSelectionTarget
+  target?: ClaudeAccountSelectionTarget,
+  pinnedAccountId?: string
 ) => Promise<ClaudeRuntimeAuthPreparation>

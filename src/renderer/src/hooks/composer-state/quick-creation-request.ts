@@ -7,6 +7,7 @@ import type { TuiAgent } from '../../../../shared/tui-agent'
 import type { AgentLaunchChoice } from '@/lib/agent-menu-selection'
 import type { GitPushTarget } from '../../../../shared/worktree/types'
 import type { SetupDecision } from '../../../../shared/worktree/create-types'
+import type { WorkspaceAgentAccounts } from '../../../../shared/project-agent-accounts'
 import { toFolderWorkspaceLinkedTask } from '@/components/sidebar/folder-workspace-composer-helpers'
 
 export type QuickCreationRequestInput = {
@@ -31,6 +32,7 @@ export type QuickCreationRequestInput = {
   linkedPR: number | null
   pushTarget: GitPushTarget | undefined
   agent: TuiAgent | null
+  agentAccounts?: WorkspaceAgentAccounts
   agentLaunchRoute?: WorktreeCreationRequest['agentLaunchRoute']
   linkedLinearIssue: string | undefined
   linkedLinearIssueWorkspaceId: string | undefined
@@ -59,6 +61,7 @@ export type QuickCreationRequestInput = {
 export type QuickSubmitOptions = {
   setupOnly?: boolean
   launchChoice?: AgentLaunchChoice
+  agentAccounts?: WorkspaceAgentAccounts
 }
 
 export function buildQuickCreationRequest(
@@ -94,6 +97,7 @@ export function buildQuickCreationRequest(
     ...(input.linkedPR != null ? { linkedPR: input.linkedPR } : {}),
     ...(input.pushTarget ? { pushTarget: input.pushTarget } : {}),
     agent: input.agent,
+    ...(input.agent && input.agentAccounts ? { agentAccounts: input.agentAccounts } : {}),
     ...(input.agentLaunchRoute ? { agentLaunchRoute: input.agentLaunchRoute } : {}),
     ...(input.linkedLinearIssue ? { linkedLinearIssue: input.linkedLinearIssue } : {}),
     ...(input.linkedLinearIssueWorkspaceId !== undefined

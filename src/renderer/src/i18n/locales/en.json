@@ -20501,7 +20501,8 @@
     },
     "newWorkspace": {
       "agentOptional": "Agent [Optional]",
-      "createDescription": "Choose the project and workspace name. Select an agent if you want to start one."
+      "createDescription": "Choose the project and workspace name. Select an agent if you want to start one.",
+      "agentAccount": "{{provider}} account"
     },
     "JiraIssueWorkspace": {
       "pendingChange": "Another issue change is in progress."
@@ -20575,6 +20576,24 @@
       "stepDownload": "Download",
       "stepUnpack": "Unpack",
       "stepCheck": "Check"
+    },
+    "agentAccounts": {
+      "systemDefault": "System default"
+    },
+    "RepositoryAgentAccountsSection": {
+      "title": "Agent Accounts",
+      "description": "Choose which accounts this project's agent terminals may use and which one they start with. You can pick another allowed account when creating a worktree.",
+      "saveFailed": "Could not save the agent accounts for this project.",
+      "defaultLabel": "Default account",
+      "followGlobal": "Follow the account selected in the status bar",
+      "effective": "New {{provider}} terminals in this project use {{account}}.",
+      "allowedLabel": "Allowed accounts",
+      "systemDefaultDetail": "your own {{provider}} login",
+      "searchDescription": "Choose which Claude and Codex accounts this project's agent terminals use.",
+      "keywordAccount": "account",
+      "keywordClaude": "claude",
+      "keywordCodex": "codex",
+      "keywordLogin": "login"
     }
   },
   "dashboardPopout": {

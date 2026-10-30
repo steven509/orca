@@ -5,6 +5,7 @@ import type { WorkspaceSource } from '../workspace-source'
 import type { TaskSourceContext } from '../task-source-context'
 import type { WorkspaceKey } from '../folder-workspace-types'
 import type { TuiAgent } from '../tui-agent'
+import type { WorkspaceAgentAccounts } from '../project-agent-accounts'
 import type {
   AutomationWorkspaceProvenanceRequest,
   GitPushTarget,
@@ -123,6 +124,8 @@ export type CreateWorktreeArgs = {
   parentWorkspace?: WorkspaceKey
   /** Agent selected in the create surface. Omitted for blank-shell creates. */
   createdWithAgent?: TuiAgent
+  /** Agent accounts picked in the create surface; local hosts persist them on the workspace. */
+  agentAccounts?: WorkspaceAgentAccounts
   /** Await a first-agent-message branch/title rename for this generated branch. */
   pendingFirstAgentMessageRename?: boolean
   /** Creation-surface telemetry. Unknown surfaces emit "unknown" to expose coverage gaps; older callers may omit it and default at IPC. */

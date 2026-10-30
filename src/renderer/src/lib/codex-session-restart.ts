@@ -22,7 +22,11 @@ import {
   isLocalCodexSelectionLaneKey,
   resolveCodexPaneSelectionLane
 } from './codex-pane-selection-lane'
-import type { CodexAccountSelectionTarget } from '../../../shared/codex-selection-lane'
+import {
+  getCodexSelectionLaneKey,
+  type CodexAccountSelectionTarget
+} from '../../../shared/codex-selection-lane'
+import { isWorktreeAgentAccountPinned } from './worktree-agent-account-pin'
 import type { RuntimeClientTarget } from '../../../shared/runtime-client-target'
 import type { TuiAgent } from '../../../shared/tui-agent'
 
@@ -107,6 +111,21 @@ async function scanCodexPanes(
           eligible: false,
           inconclusive: false,
           launchedCodex: false,
+          notified: false,
+          laneKey: lane.laneKey,
+          laneSource: lane.source
+        }
+      }
+      if (
+        lane.laneKey === getCodexSelectionLaneKey({ runtime: 'host' }) &&
+        isWorktreeAgentAccountPinned(state, tab.worktreeId, 'codex')
+      ) {
+        // A global switch leaves project-pinned panes on their account, so they stay current.
+        return {
+          ptyId,
+          eligible: false,
+          inconclusive: false,
+          launchedCodex: tab.launchAgent === 'codex',
           notified: false,
           laneKey: lane.laneKey,
           laneSource: lane.source

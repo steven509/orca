@@ -7,6 +7,7 @@ import type { CreateWorktreeArgsWithSystemProvenance } from '../ipc-context-sche
 import { getFolderWorkspaceInstanceId, mergeFolderWorkspace } from '../folder-workspace-model'
 import { resolveWorktreeCreateDisplayNameRequest } from '../../worktree-display-name'
 import { hostWorktreeTargetForRepo } from '../../../persistence/host-qualified-worktree-meta'
+import { normalizeWorkspaceAgentAccounts } from '../../../../shared/project-agent-accounts'
 
 export function createFolderWorkspace(
   args: CreateWorktreeArgsWithSystemProvenance,
@@ -23,6 +24,7 @@ export function createFolderWorkspace(
     args.cliProvenance?.kind === 'created-by-cli',
     args.nameWasGenerated === true
   )
+  const agentAccounts = normalizeWorkspaceAgentAccounts(args.agentAccounts)
   const meta = store.setWorktreeMeta(hostWorktreeTargetForRepo(worktreeId, repo), {
     instanceId,
     ...(store.getProjectHostSetups
@@ -40,6 +42,7 @@ export function createFolderWorkspace(
     ...(args.automationProvenance ? { automationProvenance: args.automationProvenance } : {}),
     ...(args.cliProvenance ? { cliProvenance: args.cliProvenance } : {}),
     ...(args.createdWithAgent ? { createdWithAgent: args.createdWithAgent } : {}),
+    ...(agentAccounts ? { agentAccounts } : {}),
     ...(args.linkedIssue !== undefined ? { linkedIssue: args.linkedIssue } : {}),
     ...(args.linkedPR !== undefined ? { linkedPR: args.linkedPR } : {}),
     ...(args.linkedLinearIssue !== undefined ? { linkedLinearIssue: args.linkedLinearIssue } : {}),

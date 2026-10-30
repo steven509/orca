@@ -5,6 +5,7 @@ import { normalizeRepoBadgeColor } from '../../../shared/repo-badge-color'
 import { sanitizeRepoIcon } from '../../../shared/repo-icon'
 import { normalizeGhAccountBinding } from '../../../shared/github/account-binding'
 import { normalizeJiraProjectReference } from '../../../shared/jira/jira-project-reference'
+import { normalizeProjectAgentAccounts } from '../../../shared/project-agent-accounts'
 import type { GhAccountBinding } from '../../../shared/github/account-binding'
 import {
   normalizeCustomWorktreeVisibilitySources,
@@ -76,6 +77,7 @@ export function sanitizeRepoUpdatesForPersistence<
       | 'projectHostSetupMethod'
       | 'forkSyncMode'
       | 'defaultJiraProject'
+      | 'agentAccounts'
       | 'customWorktreeVisibilitySources'
       | 'worktreeVisibilitySourcePreferences'
     >
@@ -84,6 +86,14 @@ export function sanitizeRepoUpdatesForPersistence<
   }
 >(updates: T): T {
   const sanitized = { ...updates }
+  if ('agentAccounts' in sanitized) {
+    const agentAccounts = normalizeProjectAgentAccounts(sanitized.agentAccounts)
+    if (agentAccounts === undefined) {
+      delete sanitized.agentAccounts
+    } else {
+      sanitized.agentAccounts = agentAccounts
+    }
+  }
   if ('defaultJiraProject' in sanitized) {
     const reference = normalizeJiraProjectReference(sanitized.defaultJiraProject)
     if (reference === undefined) {

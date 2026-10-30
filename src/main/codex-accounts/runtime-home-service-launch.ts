@@ -19,6 +19,7 @@ import { getCodexSessionBackfillDate } from '../codex/codex-session-backfill-sca
 import { resolveCodexSessionBackfillPaths } from '../codex/codex-session-backfill'
 import type { CodexSessionBackfillDate } from '../codex/codex-session-backfill-types'
 import { ManagedCodexHomeTemporarilyUnavailableError } from './host-codex-managed-home-ownership'
+import { SYSTEM_DEFAULT_AGENT_ACCOUNT_ID } from '../../shared/project-agent-accounts'
 import { CodexRuntimeHomeRouting } from './runtime-home-service-home-routing'
 import { blockedWslDistroForExec } from '../wsl/wsl-background-exec-gate'
 import { getWslHomeAsync } from '../wsl'
@@ -40,7 +41,7 @@ export abstract class CodexRuntimeHomeLaunch extends CodexRuntimeHomeRouting {
   prepareForCodexLaunch(
     target?: CodexAccountSelectionTarget,
     launchEnv?: NodeJS.ProcessEnv,
-    options?: { unavailableManagedHomePath?: string }
+    options?: { unavailableManagedHomePath?: string; pinnedAccountId?: string }
   ): string | null {
     if (target?.runtime === 'wsl') {
       const wslTarget = this.resolveWslDefaultTarget(target)
@@ -48,6 +49,12 @@ export abstract class CodexRuntimeHomeLaunch extends CodexRuntimeHomeRouting {
       this.startLegacyWslAuthDrain(wslTarget)
       this.finishWslLaunchPreparation(wslTarget, homePath)
       return homePath
+    }
+    if (options?.pinnedAccountId !== undefined) {
+      const pinnedHome = this.preparePinnedHostAccountHomeForLaunch(options.pinnedAccountId)
+      if (pinnedHome !== undefined) {
+        return pinnedHome
+      }
     }
     const selfContainedAccount = this.getSelfContainedManagedHostAccount()
     if (selfContainedAccount) {
@@ -81,6 +88,34 @@ export abstract class CodexRuntimeHomeLaunch extends CodexRuntimeHomeRouting {
       )
     }
     return this.getRuntimeHomePath()
+  }
+
+  /** Null runs the real home; undefined falls back to the selection. Selection sync state stays untouched. */
+  private preparePinnedHostAccountHomeForLaunch(accountId: string): string | null | undefined {
+    if (accountId === SYSTEM_DEFAULT_AGENT_ACCOUNT_ID) {
+      return null
+    }
+    const account = this.store
+      .getSettings()
+      .codexManagedAccounts.find((entry) => entry.id === accountId)
+    if (!account || this.getWslManagedHomePath(account)) {
+      return undefined
+    }
+    const resolved = this.resolveSelfContainedManagedHome(account)
+    if (resolved.kind === 'indeterminate') {
+      throw new ManagedCodexHomeTemporarilyUnavailableError()
+    }
+    if (resolved.kind !== 'owned') {
+      console.warn('[codex-runtime-home] Project account home is not trusted; using the selection')
+      return undefined
+    }
+    syncSystemCodexResourcesIntoManagedHome(resolved.homePath)
+    syncSystemConfigIntoManagedCodexHome({
+      runtimeHomePath: resolved.homePath,
+      systemHomePath: getSystemCodexHomePath()
+    })
+    this.startSelfContainedSessionBridgeForLaunch(resolved.homePath)
+    return resolved.homePath
   }
 
   // Real-home launches see managed-account history too, or switching back to system default hides it (#25000).
@@ -130,7 +165,7 @@ export abstract class CodexRuntimeHomeLaunch extends CodexRuntimeHomeRouting {
   async prepareForCodexLaunchAsync(
     target?: CodexAccountSelectionTarget,
     launchEnv?: NodeJS.ProcessEnv,
-    options?: { unavailableManagedHomePath?: string }
+    options?: { unavailableManagedHomePath?: string; pinnedAccountId?: string }
   ): Promise<string | null> {
     if (target?.runtime !== 'wsl') {
       return this.prepareForCodexLaunch(target, launchEnv, options)

@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { cn } from '@/lib/utils'
 import { translate } from '@/i18n/i18n'
 import type { NewWorkspaceComposerCardProps } from './new-workspace-composer-card-props'
+import { NewWorkspaceComposerAgentAccountField } from './NewWorkspaceComposerAgentAccountField'
 import type { TuiAgent } from '../../../../shared/tui-agent'
 
 type NewWorkspaceComposerAgentSectionProps = Pick<
@@ -15,6 +16,7 @@ type NewWorkspaceComposerAgentSectionProps = Pick<
   | 'onQuickAgentChange'
   | 'agentRows'
   | 'quickSetupOnly'
+  | 'agentAccountField'
   | 'onQuickSetupOnlySelect'
   | 'onOpenAgentSettings'
   | 'createDisabled'
@@ -35,6 +37,7 @@ export function NewWorkspaceComposerAgentSection({
   agentSurfaceRows,
   onQuickAgentChange,
   quickSetupOnly = false,
+  agentAccountField,
   onQuickSetupOnlySelect,
   onOpenAgentSettings,
   createDisabled,
@@ -93,6 +96,9 @@ export function NewWorkspaceComposerAgentSection({
         </div>
         <AgentCombobox {...comboboxProps} surfaceRows={agentSurfaceRows} />
       </div>
+      {agentAccountField ? (
+        <NewWorkspaceComposerAgentAccountField field={agentAccountField} />
+      ) : null}
 
       <div className="!mb-2">
         <Button

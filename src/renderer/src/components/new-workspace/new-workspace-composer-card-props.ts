@@ -21,6 +21,7 @@ import type { SshConnectionStatus } from '../../../../shared/ssh-types'
 import type { TaskSourceContext } from '../../../../shared/task-source-context'
 import type { TuiAgent } from '../../../../shared/tui-agent'
 import type { ExecutionHostId } from '../../../../shared/execution-host'
+import type { ComposerAgentAccountField } from './NewWorkspaceComposerAgentAccountField'
 
 export type RepoOption = React.ComponentProps<typeof RepoCombobox>['repos'][number]
 export type EphemeralVmRecipeOption = NonNullable<OrcaHooks['environmentRecipes']>[number]
@@ -48,6 +49,8 @@ export type NewWorkspaceComposerCardProps = {
   agentRows?: ComposerAgentRows | null
   /** Cleared picker: skip the agent and the extra shell when setup runs. */
   quickSetupOnly?: boolean
+  /** Account the quick agent starts with; null when the project's host has no accounts to choose. */
+  agentAccountField?: ComposerAgentAccountField | null
   onQuickSetupOnlySelect?: () => void
   eligibleRepos: readonly RepoOption[]
   selectedRepo?: RepoOption | null

@@ -4,7 +4,11 @@ import type { OrcaHooks, RepoHookSettings } from '../../../../../shared/orca-yam
 import type { Project, ProjectUpdateArgs } from '../../../../../shared/project-types'
 import type { Repo } from '../../../../../shared/repo-types'
 import { getRepoKindLabel, isFolderRepo } from '../../../../../shared/repo-kind'
-import { getRepoExecutionHostId, type ExecutionHostId } from '../../../../../shared/execution-host'
+import {
+  getRepoExecutionHostId,
+  LOCAL_EXECUTION_HOST_ID,
+  type ExecutionHostId
+} from '../../../../../shared/execution-host'
 import { Label } from '../../ui/label'
 import { Separator } from '../../ui/separator'
 import { useShallow } from 'zustand/react/shallow'
@@ -13,6 +17,7 @@ import { McpConfigSection } from '../McpConfigSection'
 import { WorktreeSymlinksSection } from '../WorktreeSymlinksSection'
 import { SparsePresetSettingsSection } from '../SparsePresetSettingsSection'
 import { RepositorySourceControlAiSection } from './source-control/RepositorySourceControlAiSection'
+import { RepositoryAgentAccountsSection } from './RepositoryAgentAccountsSection'
 import { SearchableSetting } from '../SearchableSetting'
 import { RepositoryRemoveProjectButton } from './RepositoryRemoveProjectButton'
 import type { SettingsProjectRemovalScope } from '../settings-project-list'
@@ -197,6 +202,10 @@ export function RepositoryPane({
   const mcpEntries = allEntries.filter((entry) => entry.title === 'MCP Configs')
   const symlinkEntries = allEntries.filter((entry) => entry.title === 'Worktree Shared Paths')
   const sourceControlAiEntries = allEntries.filter((entry) => entry.title === 'Git AI Author')
+  const agentAccountEntries = allEntries.filter(
+    (entry) =>
+      entry.title === translate('components.RepositoryAgentAccountsSection.title', 'Agent Accounts')
+  )
   const hostSetupEntries = allEntries.filter((entry) => entry.title === 'Available Hosts')
   const projectRuntimeEntries = allEntries.filter((entry) => entry.title === 'Project Runtime')
 
@@ -361,6 +370,15 @@ export function RepositoryPane({
       </section>
     ) : null,
     hooksSection,
+    // Remote hosts own their account rosters; project routing covers this machine's accounts.
+    selectedHostId === LOCAL_EXECUTION_HOST_ID &&
+    (forceFullPaneForRepoMatch || matchesSettingsSearch(searchQuery, agentAccountEntries)) ? (
+      <RepositoryAgentAccountsSection
+        key="agent-accounts"
+        repo={repo}
+        updateRepo={updateSelectedRepo}
+      />
+    ) : null,
     !isFolder &&
     (forceFullPaneForRepoMatch || matchesSettingsSearch(searchQuery, sourceControlAiEntries)) ? (
       <RepositorySourceControlAiSection

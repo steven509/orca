@@ -19,6 +19,7 @@ export async function assemblePtyIpcSpawnCodexEnv(ctx: PtyIpcSpawnState): Promis
     shellOverride: ctx.effectiveShellOverride,
     expectedWslDistro: ctx.expectedWslDistro,
     codexSelectionTarget: ctx.codexSelectionTarget,
+    codexAccountPin: ctx.agentAccountPins.codex,
     preAdopted: Boolean(ctx.preAdoptedStablePane),
     isDaemonHostSpawn: ctx.isDaemonHostSpawn,
     sessionId: ctx.effectiveSessionId,
